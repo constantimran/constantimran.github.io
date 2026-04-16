@@ -1,5 +1,74 @@
-title: MD IMRAN KHAN
-logo: 
-description: I am a Studdnt 
-#show_downloads: true
-theme: jekyll-theme-minimal
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MD Imran Khan — Portfolio</title>
+
+<style>
+body {
+  font-family: Arial;
+  background:#f4f4f4;
+  margin:0;
+}
+
+header {
+  background:#333;
+  color:#fff;
+  padding:40px;
+  text-align:center;
+}
+
+section {
+  padding:20px;
+  margin:20px;
+  background:#fff;
+  border-radius:8px;
+}
+
+h2 {
+  color:#333;
+}
+</style>
+
+</head>
+<body>
+
+<header>
+<h1>MD IMRAN KHAN</h1>
+<p>Student | Easygoing & Helpful</p>
+</header>
+
+<section>
+<h2>About Me</h2>
+<p>
+My name is MD Imran Khan. I am a student and an easygoing person who likes helping helpless people. 
+I enjoy learning new things and improving myself.
+</p>
+</section>
+
+<section>
+<h2>Skills</h2>
+<ul>
+<li>HTML</li>
+<li>Communication</li>
+<li>Teamwork</li>
+<li>Problem Solving</li>
+<li>Time Management</li>
+</ul>
+</section>
+
+<section>
+<h2>Projects</h2>
+<p>
+Created a personal portfolio website as an academic project to present my skills and background.
+</p>
+</section>
+
+<section>
+<h2>Contact</h2>
+<p>Email: p26116@psuca.edu</p>
+</section>
+
+</body>
+</html>
