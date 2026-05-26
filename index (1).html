@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CardDrop — Discounted Gift Cards Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#0A0F1E;
+  --navy2:#111827;
+  --navy3:#1a2235;
+  --navy4:#243048;
+  --green:#00E5A0;
+  --green2:#00C48A;
+  --green3:#00A374;
+  --amber:#F5A623;
+  --red:#FF4757;
+  --blue:#3B82F6;
+  --purple:#8B5CF6;
+  --text:#F0F4FF;
+  --text2:#A8B4CC;
+  --text3:#5C6B88;
+  --border:#1E2B42;
+  --border2:#2A3A58;
+  --card:#131d30;
+  --card2:#19253c;
+  --radius:12px;
+  --radius2:8px;
+  --radius3:20px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Sora',sans-serif;background:var(--navy);color:var(--text);min-height:100vh;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+button{font-family:'Sora',sans-serif;cursor:pointer;border:none;outline:none}
+input,select{font-family:'Sora',sans-serif}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(10,15,30,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 2rem}
+.nav-inner{max-width:1400px;margin:0 auto;height:64px;display:flex;align-items:center;gap:2rem}
+.logo{display:flex;align-items:center;gap:10px;font-size:1.2rem;font-weight:700;letter-spacing:-0.02em}
+.logo-icon{width:32px;height:32px;background:var(--green);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--navy);font-size:1rem}
+.logo-text span{color:var(--green)}
+.nav-links{display:flex;gap:1.5rem;margin-left:2rem}
+.nav-links a{font-size:0.85rem;color:var(--text2);font-weight:500;transition:color 0.2s}
+.nav-links a:hover{color:var(--text)}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:1rem}
+.nav-search{position:relative}
+.nav-search input{background:var(--navy3);border:1px solid var(--border2);border-radius:8px;padding:8px 36px 8px 14px;color:var(--text);font-size:0.85rem;width:220px;transition:border-color 0.2s}
+.nav-search input:focus{outline:none;border-color:var(--green)}
+.nav-search .si{position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:16px}
+.btn{padding:8px 18px;border-radius:8px;font-size:0.85rem;font-weight:600;transition:all 0.2s}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text2)}
+.btn-ghost:hover{border-color:var(--green);color:var(--green)}
+.btn-primary{background:var(--green);color:var(--navy);border:none}
+.btn-primary:hover{background:var(--green2)}
+.badge-count{background:var(--red);color:#fff;border-radius:50%;width:18px;height:18px;font-size:0.65rem;font-weight:700;display:inline-flex;align-items:center;justify-content:center;vertical-align:super;margin-left:2px}
+
+/* HERO */
+.hero{background:var(--navy);padding:5rem 2rem 3rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-200px;right:-100px;width:600px;height:600px;background:radial-gradient(circle,rgba(0,229,160,0.07) 0%,transparent 70%);pointer-events:none}
+.hero::after{content:'';position:absolute;bottom:-100px;left:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(59,130,246,0.05) 0%,transparent 70%);pointer-events:none}
+.hero-inner{max-width:1400px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.2);border-radius:100px;padding:6px 14px;font-size:0.78rem;color:var(--green);font-weight:600;margin-bottom:1.5rem}
+.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+h1{font-size:clamp(2.2rem,5vw,3.8rem);font-weight:700;line-height:1.1;letter-spacing:-0.03em;margin-bottom:1.25rem}
+h1 .accent{color:var(--green)}
+.hero-sub{font-size:1rem;color:var(--text2);max-width:540px;line-height:1.7;margin-bottom:2.5rem}
+.hero-search{background:var(--card);border:1px solid var(--border2);border-radius:14px;padding:8px 8px 8px 20px;display:flex;align-items:center;gap:12px;max-width:620px;margin-bottom:2rem}
+.hero-search input{flex:1;background:transparent;border:none;color:var(--text);font-size:0.95rem;outline:none}
+.hero-search input::placeholder{color:var(--text3)}
+.hero-search .hs-icon{color:var(--text3);font-size:20px}
+.hero-search button{background:var(--green);color:var(--navy);border:none;border-radius:10px;padding:10px 22px;font-weight:700;font-size:0.9rem;cursor:pointer;transition:background 0.2s;white-space:nowrap}
+.hero-search button:hover{background:var(--green2)}
+.hero-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:2.5rem}
+.tag{background:var(--navy3);border:1px solid var(--border);border-radius:100px;padding:5px 14px;font-size:0.78rem;color:var(--text2);cursor:pointer;transition:all 0.2s}
+.tag:hover,.tag.active{background:rgba(0,229,160,0.1);border-color:rgba(0,229,160,0.3);color:var(--green)}
+.hero-stats{display:flex;gap:2.5rem;flex-wrap:wrap}
+.stat{display:flex;flex-direction:column;gap:2px}
+.stat-val{font-size:1.5rem;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--text)}
+.stat-label{font-size:0.75rem;color:var(--text3);font-weight:500}
+
+/* SECTION */
+.section{padding:3rem 2rem}
+.section-inner{max-width:1400px;margin:0 auto}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
+.section-title{font-size:1.3rem;font-weight:700;letter-spacing:-0.02em}
+.section-title span{color:var(--green)}
+.see-all{font-size:0.82rem;color:var(--text2);display:flex;align-items:center;gap:4px;cursor:pointer;transition:color 0.2s}
+.see-all:hover{color:var(--green)}
+
+/* TRUST BAR */
+.trust-bar{background:var(--navy3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:1rem 2rem}
+.trust-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-around;flex-wrap:wrap;gap:1rem}
+.trust-item{display:flex;align-items:center;gap:10px;font-size:0.82rem;color:var(--text2)}
+.trust-item i{font-size:20px;color:var(--green)}
+.trust-item strong{color:var(--text);font-weight:600}
+
+/* MAIN LAYOUT */
+.main-layout{max-width:1400px;margin:0 auto;padding:2rem;display:grid;grid-template-columns:280px 1fr;gap:2rem}
+@media(max-width:900px){.main-layout{grid-template-columns:1fr}}
+
+/* SIDEBAR */
+.sidebar{display:flex;flex-direction:column;gap:1.25rem}
+.filter-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem}
+.filter-title{font-size:0.82rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between}
+.filter-title button{font-size:0.75rem;color:var(--green);background:none;border:none;cursor:pointer;font-family:'Sora',sans-serif;font-weight:600}
+.filter-group{display:flex;flex-direction:column;gap:6px}
+.filter-check{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:8px;cursor:pointer;transition:background 0.15s;font-size:0.85rem;color:var(--text2)}
+.filter-check:hover{background:var(--navy3)}
+.filter-check input[type=checkbox]{accent-color:var(--green);width:15px;height:15px;cursor:pointer}
+.filter-check.checked{color:var(--text)}
+.filter-check .count{margin-left:auto;font-size:0.72rem;color:var(--text3);font-family:'JetBrains Mono',monospace}
+.range-wrap{padding:4px 0}
+.range-label{display:flex;justify-content:space-between;font-size:0.8rem;color:var(--text2);margin-bottom:8px}
+.range-label span{font-family:'JetBrains Mono',monospace;color:var(--green);font-weight:500}
+input[type=range]{width:100%;accent-color:var(--green);cursor:pointer}
+.stars-row{display:flex;gap:6px;flex-wrap:wrap}
+.star-btn{padding:5px 12px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:0.78rem;cursor:pointer;transition:all 0.2s;font-family:'Sora',sans-serif}
+.star-btn:hover,.star-btn.active{background:rgba(245,166,35,0.1);border-color:var(--amber);color:var(--amber)}
+
+/* PRODUCT GRID */
+.grid-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:1rem}
+.result-count{font-size:0.85rem;color:var(--text2)}
+.result-count strong{color:var(--text)}
+.sort-row{display:flex;align-items:center;gap:10px}
+.sort-row label{font-size:0.82rem;color:var(--text3)}
+.sort-row select{background:var(--card);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:6px 12px;font-size:0.82rem;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.25rem}
+
+/* CARD */
+.gc-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color 0.2s,transform 0.2s;position:relative;cursor:pointer}
+.gc-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.gc-card.best-deal{border-color:rgba(0,229,160,0.3)}
+.card-img{height:120px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;position:relative}
+.card-badges{position:absolute;top:10px;left:10px;display:flex;flex-direction:column;gap:5px}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:100px;font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em}
+.badge-deal{background:rgba(0,229,160,0.15);color:var(--green);border:1px solid rgba(0,229,160,0.3)}
+.badge-hot{background:rgba(255,71,87,0.15);color:var(--red);border:1px solid rgba(255,71,87,0.3)}
+.badge-new{background:rgba(59,130,246,0.15);color:var(--blue);border:1px solid rgba(59,130,246,0.3)}
+.badge-limited{background:rgba(245,166,35,0.15);color:var(--amber);border:1px solid rgba(245,166,35,0.3)}
+.watchlist-btn{position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,0.4);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;color:var(--text3);font-size:16px}
+.watchlist-btn:hover,.watchlist-btn.active{background:rgba(255,71,87,0.2);border-color:var(--red);color:var(--red)}
+.card-body{padding:1rem}
+.card-brand{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:4px}
+.card-name{font-size:0.95rem;font-weight:600;margin-bottom:6px;line-height:1.3}
+.card-meta{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.card-region{font-size:0.72rem;color:var(--text3);background:var(--navy3);padding:2px 8px;border-radius:4px}
+.seller-rating{display:flex;align-items:center;gap:3px;font-size:0.72rem;color:var(--amber)}
+.seller-rating span{color:var(--text2)}
+.card-pricing{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+.card-price{font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:700;color:var(--green)}
+.card-face{font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:var(--text3);text-decoration:line-through}
+.card-discount{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:0.82rem;font-weight:700;color:var(--red);background:rgba(255,71,87,0.08);padding:2px 7px;border-radius:5px}
+.card-footer{display:flex;align-items:center;gap:8px;padding-top:10px;border-top:1px solid var(--border)}
+.btn-buy{flex:1;background:var(--green);color:var(--navy);border:none;border-radius:8px;padding:8px;font-size:0.82rem;font-weight:700;cursor:pointer;transition:background 0.2s}
+.btn-buy:hover{background:var(--green2)}
+.btn-alert{background:var(--navy3);border:1px solid var(--border2);color:var(--text2);border-radius:8px;padding:8px 10px;cursor:pointer;transition:all 0.2s;font-size:14px}
+.btn-alert:hover{border-color:var(--amber);color:var(--amber)}
+.stock-bar{height:3px;background:var(--border);border-radius:2px;margin-top:8px;overflow:hidden}
+.stock-fill{height:100%;border-radius:2px;background:var(--green);transition:width 0.5s}
+.stock-fill.low{background:var(--red)}
+.stock-fill.med{background:var(--amber)}
+.stock-label{font-size:0.68rem;color:var(--text3);margin-top:4px}
+
+/* TOP DEALS SCROLL */
+.deal-scroll{display:flex;gap:1rem;overflow-x:auto;padding-bottom:0.5rem;scrollbar-width:none}
+.deal-scroll::-webkit-scrollbar{display:none}
+.deal-mini{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;min-width:180px;display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:border-color 0.2s}
+.deal-mini:hover{border-color:rgba(0,229,160,0.3)}
+.deal-mini-icon{font-size:2rem;margin-bottom:4px}
+.deal-mini-name{font-size:0.85rem;font-weight:600}
+.deal-mini-pct{font-size:1.3rem;font-weight:700;color:var(--green);font-family:'JetBrains Mono',monospace}
+.deal-mini-label{font-size:0.72rem;color:var(--text3)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--navy2);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:700px;max-height:90vh;overflow-y:auto}
+.modal-header{padding:1.5rem 1.5rem 1rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.modal-title{font-size:1.1rem;font-weight:700}
+.modal-close{background:var(--navy3);border:1px solid var(--border2);color:var(--text2);border-radius:8px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:all 0.2s}
+.modal-close:hover{color:var(--text);border-color:var(--border)}
+.modal-body{padding:1.5rem}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+@media(max-width:600px){.modal-grid{grid-template-columns:1fr}}
+.modal-card-visual{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem}
+.modal-emoji{font-size:4rem}
+.modal-brand{font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3)}
+.info-table{display:flex;flex-direction:column;gap:10px}
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
+.info-row:last-child{border-bottom:none}
+.info-label{font-size:0.82rem;color:var(--text3)}
+.info-val{font-size:0.85rem;font-weight:600;color:var(--text)}
+.info-val.green{color:var(--green)}
+.info-val.red{color:var(--red)}
+.chart-wrap{margin-top:1.5rem}
+.chart-title{font-size:0.85rem;font-weight:600;color:var(--text2);margin-bottom:1rem}
+.chart-canvas-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;height:180px}
+.calc-section{margin-top:1.5rem;background:rgba(0,229,160,0.05);border:1px solid rgba(0,229,160,0.15);border-radius:var(--radius);padding:1.25rem}
+.calc-title{font-size:0.85rem;font-weight:700;color:var(--green);margin-bottom:1rem;display:flex;align-items:center;gap:6px}
+.calc-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.calc-row label{font-size:0.82rem;color:var(--text2);min-width:120px}
+.calc-row input{background:var(--navy3);border:1px solid var(--border2);border-radius:8px;padding:7px 12px;color:var(--text);font-size:0.85rem;width:140px}
+.calc-row input:focus{outline:none;border-color:var(--green)}
+.savings-display{background:var(--navy3);border-radius:10px;padding:1rem;text-align:center;margin-top:10px}
+.savings-display .sv{font-family:'JetBrains Mono',monospace;font-size:1.8rem;font-weight:700;color:var(--green)}
+.savings-display .sl{font-size:0.78rem;color:var(--text3);margin-top:4px}
+.alert-section{margin-top:1.25rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem}
+.alert-title{font-size:0.85rem;font-weight:700;color:var(--amber);margin-bottom:0.75rem;display:flex;align-items:center;gap:6px}
+.alert-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.alert-row input{background:var(--navy3);border:1px solid var(--border2);border-radius:8px;padding:7px 12px;color:var(--text);font-size:0.85rem;width:140px}
+.alert-row input:focus{outline:none;border-color:var(--amber)}
+.btn-set-alert{background:var(--amber);color:var(--navy);border:none;border-radius:8px;padding:8px 16px;font-size:0.82rem;font-weight:700;cursor:pointer;transition:background 0.2s;font-family:'Sora',sans-serif}
+.btn-set-alert:hover{background:#e09400}
+
+/* WATCHLIST PANEL */
+.watchlist-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem}
+.watchlist-empty{text-align:center;padding:2rem;color:var(--text3);font-size:0.85rem}
+.watchlist-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.watchlist-item:last-child{border-bottom:none}
+.wi-icon{font-size:1.5rem}
+.wi-info{flex:1}
+.wi-name{font-size:0.85rem;font-weight:600}
+.wi-price{font-size:0.78rem;color:var(--green);font-family:'JetBrains Mono',monospace}
+.wi-remove{color:var(--text3);cursor:pointer;font-size:16px;transition:color 0.2s}
+.wi-remove:hover{color:var(--red)}
+
+/* HOW IT WORKS */
+.how-section{background:var(--navy3);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem}
+.step-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;position:relative}
+.step-num{font-family:'JetBrains Mono',monospace;font-size:0.72rem;font-weight:700;color:var(--green);margin-bottom:1rem}
+.step-icon{font-size:1.8rem;color:var(--green);margin-bottom:0.75rem}
+.step-title{font-size:0.95rem;font-weight:700;margin-bottom:0.5rem}
+.step-desc{font-size:0.82rem;color:var(--text2);line-height:1.6}
+
+/* SAFETY */
+.safety-section{}
+.safety-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem}
+.safety-card{border-radius:var(--radius);padding:1.25rem;display:flex;gap:14px}
+.safety-card.warn{background:rgba(255,71,87,0.06);border:1px solid rgba(255,71,87,0.2)}
+.safety-card.ok{background:rgba(0,229,160,0.05);border:1px solid rgba(0,229,160,0.15)}
+.safety-card.info{background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.2)}
+.safety-icon{font-size:1.5rem;flex-shrink:0}
+.safety-card.warn .safety-icon{color:var(--red)}
+.safety-card.ok .safety-icon{color:var(--green)}
+.safety-card.info .safety-icon{color:var(--blue)}
+.safety-title{font-size:0.88rem;font-weight:700;margin-bottom:6px}
+.safety-desc{font-size:0.8rem;color:var(--text2);line-height:1.6}
+
+/* TRENDING */
+.trending-table{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.tt-header{display:grid;grid-template-columns:32px 1fr 100px 100px 90px;gap:1rem;padding:10px 1.25rem;background:var(--navy3);font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3)}
+.tt-row{display:grid;grid-template-columns:32px 1fr 100px 100px 90px;gap:1rem;padding:12px 1.25rem;border-top:1px solid var(--border);align-items:center;cursor:pointer;transition:background 0.15s}
+.tt-row:hover{background:var(--navy3)}
+.tt-rank{font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:var(--text3);font-weight:700}
+.tt-name{display:flex;align-items:center;gap:10px;font-size:0.88rem;font-weight:600}
+.tt-icon{font-size:1.3rem}
+.tt-price{font-family:'JetBrains Mono',monospace;font-size:0.88rem;font-weight:600;color:var(--green)}
+.tt-face{font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:var(--text3)}
+.disc-pill{display:inline-flex;padding:3px 10px;border-radius:100px;font-size:0.75rem;font-weight:700;background:rgba(255,71,87,0.1);color:var(--red);font-family:'JetBrains Mono',monospace}
+.trend-up{color:var(--green);font-size:13px}
+.trend-down{color:var(--red);font-size:13px}
+
+/* ALERT TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--navy2);border:1px solid var(--green);border-radius:12px;padding:1rem 1.25rem;display:flex;align-items:center;gap:12px;z-index:300;transform:translateY(100px);opacity:0;transition:all 0.35s;min-width:280px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast-icon{color:var(--green);font-size:20px}
+.toast-text{font-size:0.85rem}
+.toast-text strong{display:block;color:var(--text);margin-bottom:2px}
+.toast-text span{color:var(--text2)}
+
+/* FOOTER */
+footer{background:var(--navy2);border-top:1px solid var(--border);padding:3rem 2rem 2rem}
+.footer-inner{max-width:1400px;margin:0 auto}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2rem;margin-bottom:2rem;flex-wrap:wrap}
+@media(max-width:700px){.footer-grid{grid-template-columns:1fr 1fr}}
+.footer-logo{font-size:1.1rem;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:1rem}
+.footer-logo .logo-icon{width:28px;height:28px;font-size:0.9rem}
+.footer-desc{font-size:0.82rem;color:var(--text3);line-height:1.7;max-width:260px}
+.footer-col h4{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:1rem}
+.footer-col a{display:block;font-size:0.82rem;color:var(--text2);margin-bottom:8px;transition:color 0.2s}
+.footer-col a:hover{color:var(--green)}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;padding-top:2rem;border-top:1px solid var(--border);font-size:0.78rem;color:var(--text3)}
+.disclaimer{font-size:0.72rem;color:var(--text3);line-height:1.6;background:rgba(255,71,87,0.05);border:1px solid rgba(255,71,87,0.15);border-radius:8px;padding:0.75rem 1rem;margin-top:1.5rem}
+
+@media(max-width:768px){
+  nav{padding:0 1rem}
+  .nav-links{display:none}
+  .nav-search{display:none}
+  .hero{padding:3rem 1rem 2rem}
+  .section{padding:2rem 1rem}
+  .main-layout{padding:1rem}
+  .sidebar{display:none}
+  .tt-header,.tt-row{grid-template-columns:32px 1fr 80px 80px}
+  .tt-face{display:none}
+  .footer-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo">
+      <div class="logo-icon"><i class="ti ti-cards" aria-hidden="true"></i></div>
+      <div class="logo-text">Card<span>Drop</span></div>
+    </div>
+    <div class="nav-links">
+      <a href="#browse">Browse</a>
+      <a href="#trending">Trending</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#safety">Safety Tips</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-search">
+        <input type="text" placeholder="Search gift cards..." id="navSearchInput">
+        <i class="ti ti-search si" aria-hidden="true"></i>
+      </div>
+      <button class="btn btn-ghost" onclick="toggleWatchlistModal()">
+        <i class="ti ti-heart" aria-hidden="true"></i> Watchlist
+        <span class="badge-count" id="watchlistCount">0</span>
+      </button>
+      <button class="btn btn-primary">Sign In</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge"><span class="dot"></span> Live deals updated every 5 minutes</div>
+    <h1>Buy Gift Cards at<br><span class="accent">Up to 35% Off</span> Face Value</h1>
+    <p class="hero-sub">Browse thousands of verified discounted gift cards. Save on Apple, Amazon, PlayStation, and more — with buyer protection on every purchase.</p>
+    <div class="hero-search">
+      <i class="ti ti-search hs-icon" aria-hidden="true"></i>
+      <input type="text" placeholder="Search by brand, category, or region..." id="heroSearchInput" oninput="filterCards()">
+      <button onclick="filterCards()">Search</button>
+    </div>
+    <div class="hero-tags">
+      <span class="tag active" onclick="setCategory(this,'all')">All Cards</span>
+      <span class="tag" onclick="setCategory(this,'gaming')">Gaming</span>
+      <span class="tag" onclick="setCategory(this,'streaming')">Streaming</span>
+      <span class="tag" onclick="setCategory(this,'shopping')">Shopping</span>
+      <span class="tag" onclick="setCategory(this,'transport')">Transport</span>
+      <span class="tag" onclick="setCategory(this,'apps')">App Stores</span>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-val" id="s1">12,847</span><span class="stat-label">Active Listings</span></div>
+      <div class="stat"><span class="stat-val" id="s2">$2.4M</span><span class="stat-label">Saved This Month</span></div>
+      <div class="stat"><span class="stat-val" id="s3">98.7%</span><span class="stat-label">Satisfaction Rate</span></div>
+      <div class="stat"><span class="stat-val" id="s4">340+</span><span class="stat-label">Verified Sellers</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-inner">
+    <div class="trust-item"><i class="ti ti-shield-check" aria-hidden="true"></i><div><strong>Buyer Protection</strong><br>on all purchases</div></div>
+    <div class="trust-item"><i class="ti ti-lock" aria-hidden="true"></i><div><strong>Secure Checkout</strong><br>SSL encrypted</div></div>
+    <div class="trust-item"><i class="ti ti-star" aria-hidden="true"></i><div><strong>Verified Sellers</strong><br>rated & reviewed</div></div>
+    <div class="trust-item"><i class="ti ti-refresh" aria-hidden="true"></i><div><strong>Instant Delivery</strong><br>codes sent digitally</div></div>
+    <div class="trust-item"><i class="ti ti-headset" aria-hidden="true"></i><div><strong>24/7 Support</strong><br>dispute resolution</div></div>
+  </div>
+</div>
+
+<!-- TOP DISCOUNTS SCROLL -->
+<section class="section" id="top-deals">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-title"><span>🔥</span> Top Discounts Right Now</div>
+      <span class="see-all" onclick="document.getElementById('browse').scrollIntoView({behavior:'smooth'})">View all deals <i class="ti ti-arrow-right" aria-hidden="true"></i></span>
+    </div>
+    <div class="deal-scroll" id="dealScroll"></div>
+  </div>
+</section>
+
+<!-- MAIN BROWSE -->
+<section class="section" id="browse">
+  <div class="main-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="filter-card">
+        <div class="filter-title">Category <button onclick="clearFilters()">Clear all</button></div>
+        <div class="filter-group">
+          <label class="filter-check"><input type="checkbox" onchange="filterCards()" value="gaming"> Gaming <span class="count">48</span></label>
+          <label class="filter-check"><input type="checkbox" onchange="filterCards()" value="shopping"> Shopping <span class="count">62</span></label>
+          <label class="filter-check"><input type="checkbox" onchange="filterCards()" value="streaming"> Streaming <span class="count">24</span></label>
+          <label class="filter-check"><input type="checkbox" onchange="filterCards()" value="transport"> Transport <span class="count">18</span></label>
+          <label class="filter-check"><input type="checkbox" onchange="filterCards()" value="apps"> App Stores <span class="count">31</span></label>
+          <label class="filter-check"><input type="checkbox" onchange="filterCards()" value="food"> Food & Dining <span class="count">15</span></label>
+        </div>
+      </div>
+      <div class="filter-card">
+        <div class="filter-title">Discount Range</div>
+        <div class="range-wrap">
+          <div class="range-label">Min discount: <span id="discLabel">5%</span></div>
+          <input type="range" min="0" max="40" value="5" id="discRange" oninput="updateDisc(this.value);filterCards()">
+        </div>
+      </div>
+      <div class="filter-card">
+        <div class="filter-title">Max Price</div>
+        <div class="range-wrap">
+          <div class="range-label">Up to: <span id="priceLabel">$200</span></div>
+          <input type="range" min="10" max="500" value="200" id="priceRange" oninput="updatePrice(this.value);filterCards()">
+        </div>
+      </div>
+      <div class="filter-card">
+        <div class="filter-title">Region</div>
+        <div class="filter-group">
+          <label class="filter-check"><input type="checkbox" onchange="filterCards()" value="US"> 🇺🇸 United States <span class="count">124</span></label>
+          <label class="filter-check"><input type="checkbox" onchange="filterCards()" value="EU"> 🇪🇺 Europe <span class="count">67</span></label>
+          <label class="filter-check"><input type="checkbox" onchange="filterCards()" value="UK"> 🇬🇧 United Kingdom <span class="count">41</span></label>
+          <label class="filter-check"><input type="checkbox" onchange="filterCards()" value="Global"> 🌐 Global <span class="count">89</span></label>
+        </div>
+      </div>
+      <div class="filter-card">
+        <div class="filter-title">Seller Rating</div>
+        <div class="stars-row">
+          <button class="star-btn" onclick="toggleStarFilter(this,'5')">⭐ 5.0</button>
+          <button class="star-btn" onclick="toggleStarFilter(this,'4')">⭐ 4.0+</button>
+          <button class="star-btn" onclick="toggleStarFilter(this,'3')">⭐ 3.0+</button>
+        </div>
+      </div>
+
+      <!-- WATCHLIST MINI -->
+      <div class="filter-card">
+        <div class="filter-title">Your Watchlist</div>
+        <div id="watchlistMini"><div class="watchlist-empty">No cards saved yet.<br>Click ♡ on any card.</div></div>
+      </div>
+    </aside>
+
+    <!-- GRID -->
+    <div>
+      <div class="grid-header">
+        <div class="result-count"><strong id="gridCount">0</strong> results found</div>
+        <div class="sort-row">
+          <label>Sort:</label>
+          <select id="sortSelect" onchange="filterCards()">
+            <option value="discount">Best Discount</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="rating">Best Rating</option>
+            <option value="newest">Newest First</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid" id="cardGrid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- TRENDING TABLE -->
+<section class="section" id="trending" style="background:var(--navy3);border-top:1px solid var(--border)">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-title">📈 <span>Trending</span> Cards</div>
+    </div>
+    <div class="trending-table">
+      <div class="tt-header">
+        <div>#</div><div>Card</div><div>Sale Price</div><div>Face Value</div><div>Discount</div>
+      </div>
+      <div id="trendingTable"></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section how-section" id="how-it-works">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-title">How <span>CardDrop</span> Works</div>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-icon"><i class="ti ti-search" aria-hidden="true"></i></div>
+        <div class="step-title">Browse & Compare</div>
+        <p class="step-desc">Search thousands of discounted gift cards. Filter by brand, discount size, region, and seller rating to find exactly what you need.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-icon"><i class="ti ti-star" aria-hidden="true"></i></div>
+        <div class="step-title">Check Seller Ratings</div>
+        <p class="step-desc">Every seller is verified and rated by previous buyers. Always prioritize sellers with 4.5+ stars and 50+ completed trades.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-icon"><i class="ti ti-shield-check" aria-hidden="true"></i></div>
+        <div class="step-title">Buy with Protection</div>
+        <p class="step-desc">Your payment is held in escrow until you confirm the gift card code works. If anything goes wrong, we'll make it right.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">04</div>
+        <div class="step-icon"><i class="ti ti-bolt" aria-hidden="true"></i></div>
+        <div class="step-title">Instant Code Delivery</div>
+        <p class="step-desc">Once payment clears, the gift card code is delivered directly to your account. Redeem instantly on the platform of your choice.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SAFETY TIPS -->
+<section class="section" id="safety">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-title">🛡️ Safe Buying <span>Tips</span></div>
+    </div>
+    <div class="safety-grid">
+      <div class="safety-card warn">
+        <div class="safety-icon"><i class="ti ti-alert-triangle" aria-hidden="true"></i></div>
+        <div>
+          <div class="safety-title">Avoid Too-Good-to-Be-True Deals</div>
+          <p class="safety-desc">Discounts over 40% on major brands are almost always scams. If it seems unreal, trust your instincts and move on.</p>
+        </div>
+      </div>
+      <div class="safety-card ok">
+        <div class="safety-icon"><i class="ti ti-shield-check" aria-hidden="true"></i></div>
+        <div>
+          <div class="safety-title">Always Use Buyer Protection</div>
+          <p class="safety-desc">Never pay via wire transfer or crypto outside the platform. Use only platform-protected checkout so disputes can be resolved.</p>
+        </div>
+      </div>
+      <div class="safety-card info">
+        <div class="safety-icon"><i class="ti ti-star" aria-hidden="true"></i></div>
+        <div>
+          <div class="safety-title">Prioritize Verified Sellers</div>
+          <p class="safety-desc">Look for sellers with 4.5+ stars, 100+ completed trades, and recent positive reviews. New sellers with zero history carry more risk.</p>
+        </div>
+      </div>
+      <div class="safety-card warn">
+        <div class="safety-icon"><i class="ti ti-eye-off" aria-hidden="true"></i></div>
+        <div>
+          <div class="safety-title">Test Codes Immediately</div>
+          <p class="safety-desc">Redeem your gift card code as soon as you receive it, while buyer protection is still active. Don't wait — codes can be invalidated.</p>
+        </div>
+      </div>
+      <div class="safety-card ok">
+        <div class="safety-icon"><i class="ti ti-message-report" aria-hidden="true"></i></div>
+        <div>
+          <div class="safety-title">Report Suspicious Activity</div>
+          <p class="safety-desc">If a seller asks you to move off-platform or share personal info outside the app, report them immediately and don't complete the trade.</p>
+        </div>
+      </div>
+      <div class="safety-card info">
+        <div class="safety-icon"><i class="ti ti-receipt" aria-hidden="true"></i></div>
+        <div>
+          <div class="safety-title">Keep Records</div>
+          <p class="safety-desc">Screenshot your purchase confirmation and the card code before redeeming. This helps resolve disputes quickly and protects your purchase.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo"><div class="logo-icon"><i class="ti ti-cards" aria-hidden="true"></i></div>CardDrop</div>
+        <p class="footer-desc">The trusted marketplace for discounted gift cards. Save money, buy safely, redeem instantly.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Browse</h4>
+        <a href="#">All Gift Cards</a>
+        <a href="#">Top Deals</a>
+        <a href="#">Gaming Cards</a>
+        <a href="#">Shopping Cards</a>
+      </div>
+      <div class="footer-col">
+        <h4>Help</h4>
+        <a href="#">How It Works</a>
+        <a href="#">Buyer Protection</a>
+        <a href="#">Dispute Center</a>
+        <a href="#">FAQ</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="#">About Us</a>
+        <a href="#">Careers</a>
+        <a href="#">Blog</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+    <div class="disclaimer">
+      <strong>⚠️ Disclaimer:</strong> CardDrop is a demo website for illustrative purposes. Prices, discounts, and listings shown are fictional examples. Always verify seller ratings before purchasing gift cards on any marketplace. Be cautious of deals that seem unusually discounted — common scam thresholds are discounts above 35–40% on popular brands. Use only buyer-protected payment methods.
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 CardDrop Demo. All rights reserved.</span>
+      <span>Privacy Policy · Terms of Service · Cookie Settings</span>
+    </div>
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="cardModal" onclick="closeModal(event)">
+  <div class="modal" id="modalContent">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Card Details</div>
+      <button class="modal-close" onclick="closeModalDirect()"><i class="ti ti-x" aria-hidden="true"></i></button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- WATCHLIST MODAL -->
+<div class="modal-overlay" id="watchlistModal" onclick="closeWatchlistModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">❤️ Your Watchlist</div>
+      <button class="modal-close" onclick="document.getElementById('watchlistModal').classList.remove('open')"><i class="ti ti-x" aria-hidden="true"></i></button>
+    </div>
+    <div class="modal-body" id="watchlistModalBody"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <i class="ti ti-bell-ringing toast-icon" aria-hidden="true"></i>
+  <div class="toast-text"><strong id="toastTitle">Alert Set!</strong><span id="toastMsg">We'll notify you when the price drops.</span></div>
+</div>
+
+<script>
+const CARDS = [
+  {id:1,brand:'Apple',name:'App Store & iTunes Gift Card',emoji:'🍎',category:'apps',region:'US',face:100,price:87,rating:4.9,reviews:2341,stock:85,badges:['best-deal'],color:'#1d1d1f',bg:'#f5f5f7',trending:true,desc:'Valid for App Store, iTunes, Apple Books, Apple TV+ and more.'},
+  {id:2,brand:'Amazon',name:'Amazon Gift Card',emoji:'📦',category:'shopping',region:'US',face:100,price:88,rating:4.8,reviews:5621,stock:60,badges:['hot'],color:'#FF9900',bg:'#232f3e',trending:true,desc:'Spend on millions of products across Amazon.com.'},
+  {id:3,brand:'PlayStation',name:'PlayStation Store Credit',emoji:'🎮',category:'gaming',region:'US',face:50,price:41,rating:4.7,reviews:1892,stock:40,badges:['best-deal','hot'],color:'#003087',bg:'#00439c',trending:true,desc:'Buy games, DLC, subscriptions and more on PS5/PS4.'},
+  {id:4,brand:'Roblox',name:'Roblox Gift Card',emoji:'🟥',category:'gaming',region:'Global',face:25,price:20,rating:4.6,reviews:984,stock:90,badges:['new'],color:'#E2231A',bg:'#1a1a1a',trending:false,desc:'Get Robux or a Premium subscription for Roblox.'},
+  {id:5,brand:'Google Play',name:'Google Play Gift Card',emoji:'▶️',category:'apps',region:'US',face:50,price:44,rating:4.8,reviews:3102,stock:75,badges:[],color:'#EA4335',bg:'#202124',trending:true,desc:'Use on Google Play for apps, games, movies, and books.'},
+  {id:6,brand:'Razer Gold',name:'Razer Gold Global',emoji:'🐍',category:'gaming',region:'Global',face:50,price:43,rating:4.5,reviews:721,stock:50,badges:['limited'],color:'#00FC1B',bg:'#121212',trending:false,desc:'Razer Gold is the unified virtual credits for gamers worldwide.'},
+  {id:7,brand:'Uber',name:'Uber Rides & Eats Credit',emoji:'⬛',category:'transport',region:'US',face:50,price:43,rating:4.7,reviews:1456,stock:65,badges:[],color:'#000',bg:'#1a1a1a',trending:true,desc:'Use on Uber rides or Uber Eats food delivery in the US.'},
+  {id:8,brand:'Lyft',name:'Lyft Ride Credit',emoji:'🩷',category:'transport',region:'US',face:25,price:20,rating:4.6,reviews:634,stock:55,badges:['hot'],color:'#FF00BF',bg:'#1a1a1a',trending:false,desc:'Rideshare credit valid for Lyft rides across the US.'},
+  {id:9,brand:'Steam',name:'Steam Wallet Code',emoji:'🎮',category:'gaming',region:'US',face:100,price:84,rating:4.8,reviews:4201,stock:80,badges:['best-deal'],color:'#1b2838',bg:'#c7d5e0',trending:true,desc:'Add funds to your Steam Wallet for PC games and software.'},
+  {id:10,brand:'Netflix',name:'Netflix Gift Card',emoji:'📺',category:'streaming',region:'US',face:30,price:26,rating:4.7,reviews:1876,stock:70,badges:[],color:'#E50914',bg:'#141414',trending:false,desc:'Give the gift of unlimited streaming on Netflix.'},
+  {id:11,brand:'Spotify',name:'Spotify Premium Card',emoji:'🟢',category:'streaming',region:'US',face:30,price:25,rating:4.6,reviews:921,stock:85,badges:['new'],color:'#1DB954',bg:'#121212',trending:false,desc:'Redeem for Spotify Premium — no ads, offline listening.'},
+  {id:12,brand:'Xbox',name:'Xbox Gift Card',emoji:'💚',category:'gaming',region:'US',face:50,price:43,rating:4.8,reviews:2567,stock:60,badges:['hot'],color:'#107C10',bg:'#1a1a1a',trending:true,desc:'Buy games, DLC, Xbox Live Gold, Game Pass and more.'},
+  {id:13,brand:'Nintendo',name:'Nintendo eShop Card',emoji:'🔴',category:'gaming',region:'US',face:50,price:44,rating:4.7,reviews:1342,stock:45,badges:[],color:'#E60012',bg:'#1a1a1a',trending:false,desc:'Purchase games and content from the Nintendo eShop.'},
+  {id:14,brand:'Visa',name:'Visa Prepaid Gift Card',emoji:'💳',category:'shopping',region:'US',face:100,price:92,rating:4.5,reviews:445,stock:30,badges:['limited'],color:'#1A1F71',bg:'#1a1a1a',trending:false,desc:'Accepted everywhere Visa debit is accepted in the US.'},
+  {id:15,brand:'DoorDash',name:'DoorDash Gift Card',emoji:'🚗',category:'food',region:'US',face:25,price:21,rating:4.6,reviews:567,stock:70,badges:['new'],color:'#FF3008',bg:'#191919',trending:false,desc:'Order food from thousands of restaurants via DoorDash.'},
+  {id:16,brand:'Apple',name:'Apple Gift Card — $25',emoji:'🍎',category:'apps',region:'US',face:25,price:21,rating:4.9,reviews:1890,stock:90,badges:['best-deal'],color:'#1d1d1f',bg:'#f5f5f7',trending:false,desc:'Valid for App Store, iTunes, iCloud+, Apple Arcade and more.'},
+];
+
+let watchlist = new Set();
+let activeCategory = 'all';
+let activeStarFilter = null;
+let priceHistories = {};
+let chartInstance = null;
+
+CARDS.forEach(c=>{
+  const base = c.face*0.9;
+  const arr = [];
+  for(let i=29;i>=0;i--){
+    const noise = (Math.random()-0.5)*0.08*c.face;
+    arr.push(+(base+noise).toFixed(2));
+  }
+  arr[0]=c.price;
+  priceHistories[c.id]=arr.reverse();
+});
+
+function discount(c){return Math.round((1-c.price/c.face)*100)}
+
+function renderDeals(){
+  const top = [...CARDS].sort((a,b)=>discount(b)-discount(a)).slice(0,10);
+  const el = document.getElementById('dealScroll');
+  el.innerHTML = top.map(c=>`
+    <div class="deal-mini" onclick="openModal(${c.id})">
+      <div class="deal-mini-icon">${c.emoji}</div>
+      <div class="deal-mini-name">${c.brand}</div>
+      <div class="deal-mini-pct">-${discount(c)}%</div>
+      <div class="deal-mini-label">$${c.price} for $${c.face}</div>
+    </div>`).join('');
+}
+
+function renderTrending(){
+  const top = [...CARDS].filter(c=>c.trending).slice(0,8);
+  const el = document.getElementById('trendingTable');
+  el.innerHTML = top.map((c,i)=>`
+    <div class="tt-row" onclick="openModal(${c.id})">
+      <div class="tt-rank">${i+1}</div>
+      <div class="tt-name"><span class="tt-icon">${c.emoji}</span>${c.brand} — ${c.name.replace(c.brand+' ','')}</div>
+      <div class="tt-price">$${c.price}</div>
+      <div class="tt-face">$${c.face}</div>
+      <div><span class="disc-pill">-${discount(c)}%</span> <i class="ti ${Math.random()>0.5?'ti-trending-up trend-up':'ti-trending-down trend-down'}" aria-hidden="true"></i></div>
+    </div>`).join('');
+}
+
+function cardHTML(c){
+  const d = discount(c);
+  const stockColor = c.stock<35?'low':c.stock<65?'med':'';
+  const isSaved = watchlist.has(c.id);
+  return `
+  <div class="gc-card${c.badges.includes('best-deal')?' best-deal':''}" id="card-${c.id}">
+    <div class="card-img" style="background:linear-gradient(135deg,${c.bg}22,${c.bg}44)">
+      <div style="font-size:3rem">${c.emoji}</div>
+      <div class="card-badges">
+        ${c.badges.includes('best-deal')?'<span class="badge badge-deal"><i class="ti ti-bolt" aria-hidden="true"></i> Best Deal</span>':''}
+        ${c.badges.includes('hot')?'<span class="badge badge-hot"><i class="ti ti-flame" aria-hidden="true"></i> Hot</span>':''}
+        ${c.badges.includes('new')?'<span class="badge badge-new"><i class="ti ti-sparkles" aria-hidden="true"></i> New</span>':''}
+        ${c.badges.includes('limited')?'<span class="badge badge-limited"><i class="ti ti-clock" aria-hidden="true"></i> Limited</span>':''}
+      </div>
+      <button class="watchlist-btn${isSaved?' active':''}" onclick="toggleWatchlist(event,${c.id})" aria-label="Add to watchlist">
+        <i class="ti ${isSaved?'ti-heart-filled':'ti-heart'}" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="card-brand">${c.brand}</div>
+      <div class="card-name">${c.name}</div>
+      <div class="card-meta">
+        <span class="card-region">${c.region}</span>
+        <span class="seller-rating">⭐ ${c.rating} <span>(${c.reviews.toLocaleString()})</span></span>
+      </div>
+      <div class="card-pricing">
+        <span class="card-price">$${c.price}</span>
+        <span class="card-face">$${c.face}</span>
+        <span class="card-discount">-${d}%</span>
+      </div>
+      <div class="card-footer">
+        <button class="btn-buy" onclick="openModal(${c.id})">View Deal</button>
+        <button class="btn-alert" onclick="openAlert(event,${c.id})" title="Set price alert"><i class="ti ti-bell" aria-hidden="true"></i></button>
+      </div>
+      <div class="stock-bar"><div class="stock-fill ${stockColor}" style="width:${c.stock}%"></div></div>
+      <div class="stock-label">${c.stock>65?"✓ In stock":c.stock<35?"⚠️ Almost gone":"📦 Limited stock"}</div>
+    </div>
+  </div>`;
+}
+
+function filterCards(){
+  const search = (document.getElementById('heroSearchInput').value||document.getElementById('navSearchInput').value).toLowerCase();
+  const cats = [...document.querySelectorAll('.filter-group input[type=checkbox]:checked')].filter(cb=>['gaming','shopping','streaming','transport','apps','food'].includes(cb.value)).map(cb=>cb.value);
+  const regions = [...document.querySelectorAll('.filter-group input[type=checkbox]:checked')].filter(cb=>['US','EU','UK','Global'].includes(cb.value)).map(cb=>cb.value);
+  const minDisc = parseInt(document.getElementById('discRange').value)||0;
+  const maxPrice = parseInt(document.getElementById('priceRange').value)||500;
+  const sort = document.getElementById('sortSelect').value;
+  let filtered = CARDS.filter(c=>{
+    if(search && !c.name.toLowerCase().includes(search) && !c.brand.toLowerCase().includes(search)) return false;
+    if(activeCategory!=='all' && c.category!==activeCategory) return false;
+    if(cats.length && !cats.includes(c.category)) return false;
+    if(regions.length && !regions.includes(c.region)) return false;
+    if(discount(c)<minDisc) return false;
+    if(c.price>maxPrice) return false;
+    if(activeStarFilter && c.rating<parseFloat(activeStarFilter)) return false;
+    return true;
+  });
+  if(sort==='discount') filtered.sort((a,b)=>discount(b)-discount(a));
+  else if(sort==='price-low') filtered.sort((a,b)=>a.price-b.price);
+  else if(sort==='price-high') filtered.sort((a,b)=>b.price-a.price);
+  else if(sort==='rating') filtered.sort((a,b)=>b.rating-a.rating);
+  document.getElementById('gridCount').textContent = filtered.length;
+  document.getElementById('cardGrid').innerHTML = filtered.map(cardHTML).join('');
+}
+
+function setCategory(el,cat){
+  document.querySelectorAll('.tag').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  activeCategory = cat;
+  filterCards();
+}
+
+function updateDisc(v){document.getElementById('discLabel').textContent=v+'%'}
+function updatePrice(v){document.getElementById('priceLabel').textContent='$'+v}
+
+function clearFilters(){
+  document.querySelectorAll('.filter-group input[type=checkbox]').forEach(cb=>cb.checked=false);
+  document.getElementById('discRange').value=5;document.getElementById('discLabel').textContent='5%';
+  document.getElementById('priceRange').value=200;document.getElementById('priceLabel').textContent='$200';
+  activeStarFilter=null;
+  document.querySelectorAll('.star-btn').forEach(b=>b.classList.remove('active'));
+  filterCards();
+}
+
+function toggleStarFilter(el,val){
+  if(activeStarFilter===val){activeStarFilter=null;el.classList.remove('active');}
+  else{activeStarFilter=val;document.querySelectorAll('.star-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
+  filterCards();
+}
+
+function toggleWatchlist(ev,id){
+  ev.stopPropagation();
+  if(watchlist.has(id)){watchlist.delete(id);}else{watchlist.add(id);}
+  document.getElementById('watchlistCount').textContent=watchlist.size;
+  filterCards();
+  renderWatchlist();
+  if(watchlist.has(id)){showToast('Added to Watchlist','Card saved to your watchlist.');}
+}
+
+function renderWatchlist(){
+  const mini = document.getElementById('watchlistMini');
+  const body = document.getElementById('watchlistModalBody');
+  if(watchlist.size===0){
+    mini.innerHTML='<div class="watchlist-empty">No cards saved yet.<br>Click ♡ on any card.</div>';
+    if(body) body.innerHTML='<div class="watchlist-empty" style="padding:3rem">Your watchlist is empty. Browse deals and click ♡ to save cards.</div>';
+    return;
+  }
+  const items = [...watchlist].map(id=>CARDS.find(c=>c.id===id)).filter(Boolean);
+  mini.innerHTML = items.map(c=>`
+    <div class="watchlist-item">
+      <span class="wi-icon">${c.emoji}</span>
+      <div class="wi-info"><div class="wi-name">${c.brand}</div><div class="wi-price">$${c.price} (-${discount(c)}%)</div></div>
+      <i class="ti ti-x wi-remove" onclick="toggleWatchlist(event,${c.id})" aria-label="Remove"></i>
+    </div>`).join('');
+  if(body) body.innerHTML = items.map(c=>`
+    <div class="watchlist-item" style="padding:1rem 0;cursor:pointer" onclick="openModal(${c.id})">
+      <span class="wi-icon" style="font-size:2rem">${c.emoji}</span>
+      <div class="wi-info"><div class="wi-name" style="font-size:1rem">${c.brand} — ${c.name}</div><div class="wi-price" style="font-size:0.9rem">$${c.price} (was $${c.face}) · -${discount(c)}% off</div></div>
+      <i class="ti ti-x wi-remove" style="font-size:20px" onclick="toggleWatchlist(event,${c.id})" aria-label="Remove"></i>
+    </div>`).join('');
+}
+
+function openModal(id){
+  const c = CARDS.find(x=>x.id===id);
+  if(!c) return;
+  document.getElementById('modalTitle').textContent=c.brand+' — '+c.name;
+  const d=discount(c);
+  const savings=(c.face-c.price).toFixed(2);
+  document.getElementById('modalBody').innerHTML=`
+    <div class="modal-grid">
+      <div class="modal-card-visual">
+        <div class="modal-emoji">${c.emoji}</div>
+        <div class="modal-brand">${c.brand}</div>
+        <div style="font-size:0.85rem;color:var(--text2);text-align:center">${c.name}</div>
+        <span class="badge badge-deal" style="font-size:0.8rem;padding:5px 14px">-${d}% Off</span>
+      </div>
+      <div class="info-table">
+        <div class="info-row"><span class="info-label">Sale Price</span><span class="info-val green" style="font-size:1.1rem;font-family:'JetBrains Mono',monospace">$${c.price}</span></div>
+        <div class="info-row"><span class="info-label">Face Value</span><span class="info-val">$${c.face}</span></div>
+        <div class="info-row"><span class="info-label">You Save</span><span class="info-val green">$${savings}</span></div>
+        <div class="info-row"><span class="info-label">Discount</span><span class="info-val red">-${d}%</span></div>
+        <div class="info-row"><span class="info-label">Region</span><span class="info-val">${c.region}</span></div>
+        <div class="info-row"><span class="info-label">Seller Rating</span><span class="info-val">⭐ ${c.rating} (${c.reviews.toLocaleString()} reviews)</span></div>
+        <div class="info-row"><span class="info-label">Category</span><span class="info-val" style="text-transform:capitalize">${c.category}</span></div>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-title"><i class="ti ti-chart-line" aria-hidden="true"></i> 30-Day Price History</div>
+      <div class="chart-canvas-wrap"><canvas id="priceChart"></canvas></div>
+    </div>
+    <div class="calc-section">
+      <div class="calc-title"><i class="ti ti-calculator" aria-hidden="true"></i> Savings Calculator</div>
+      <div class="calc-row">
+        <label>Number of cards:</label>
+        <input type="number" id="calcQty" value="1" min="1" max="100" oninput="calcSavings(${c.face},${c.price})">
+      </div>
+      <div class="savings-display">
+        <div class="sv" id="calcResult">$${savings}</div>
+        <div class="sl">Total savings at current discount</div>
+      </div>
+    </div>
+    <div class="alert-section">
+      <div class="alert-title"><i class="ti ti-bell" aria-hidden="true"></i> Set Price Alert</div>
+      <p style="font-size:0.8rem;color:var(--text3);margin-bottom:10px">Get notified when the discount reaches your target.</p>
+      <div class="alert-row">
+        <input type="number" id="alertTarget" placeholder="e.g. 25" min="1" max="50">
+        <span style="font-size:0.85rem;color:var(--text2)">% discount or more</span>
+        <button class="btn-set-alert" onclick="setAlert(${c.id})">Set Alert</button>
+      </div>
+    </div>
+    <button class="btn-buy" style="width:100%;margin-top:1.25rem;padding:14px;font-size:0.95rem" onclick="showToast('Redirecting...','Taking you to the seller page.')">Buy Now — $${c.price} <i class="ti ti-arrow-right" aria-hidden="true"></i></button>`;
+  document.getElementById('cardModal').classList.add('open');
+  setTimeout(()=>renderPriceChart(id),100);
+}
+
+function renderPriceChart(id){
+  const ctx = document.getElementById('priceChart');
+  if(!ctx) return;
+  if(chartInstance){chartInstance.destroy();chartInstance=null;}
+  const hist = priceHistories[id];
+  const labels = hist.map((_,i)=>{const d=new Date();d.setDate(d.getDate()-(hist.length-1-i));return d.toLocaleDateString('en-US',{month:'short',day:'numeric'})});
+  chartInstance = new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets:[{label:'Price',data:hist,borderColor:'#00E5A0',backgroundColor:'rgba(0,229,160,0.08)',borderWidth:2,pointRadius:0,fill:true,tension:0.4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#131d30',titleColor:'#A8B4CC',bodyColor:'#F0F4FF',borderColor:'#1E2B42',borderWidth:1,callbacks:{label:ctx=>'$'+ctx.raw.toFixed(2)}}},scales:{x:{ticks:{color:'#5C6B88',font:{size:10},maxTicksLimit:6},grid:{color:'rgba(255,255,255,0.04)'}},y:{ticks:{color:'#5C6B88',font:{size:10},callback:v=>'$'+v},grid:{color:'rgba(255,255,255,0.04)'}}}}
+  });
+}
+
+function calcSavings(face,price){
+  const qty = parseInt(document.getElementById('calcQty').value)||1;
+  const save = ((face-price)*qty).toFixed(2);
+  document.getElementById('calcResult').textContent='$'+save;
+}
+
+function setAlert(id){
+  const target = document.getElementById('alertTarget').value;
+  if(!target){showToast('Enter a Target','Please enter a target discount percentage.');return;}
+  const c = CARDS.find(x=>x.id===id);
+  showToast('Alert Set! 🔔',`We'll notify you when ${c.brand} reaches ${target}% off.`);
+}
+
+function openAlert(ev,id){
+  ev.stopPropagation();
+  openModal(id);
+  setTimeout(()=>{const a=document.querySelector('.alert-section');if(a)a.scrollIntoView({behavior:'smooth'})},300);
+}
+
+function closeModal(ev){if(ev.target===document.getElementById('cardModal'))closeModalDirect();}
+function closeModalDirect(){
+  document.getElementById('cardModal').classList.remove('open');
+  if(chartInstance){chartInstance.destroy();chartInstance=null;}
+}
+
+function toggleWatchlistModal(){
+  renderWatchlist();
+  document.getElementById('watchlistModal').classList.add('open');
+}
+function closeWatchlistModal(ev){if(ev.target===document.getElementById('watchlistModal'))document.getElementById('watchlistModal').classList.remove('open');}
+
+function showToast(title,msg){
+  document.getElementById('toastTitle').textContent=title;
+  document.getElementById('toastMsg').textContent=msg;
+  const t=document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+document.getElementById('navSearchInput').addEventListener('input',function(){
+  document.getElementById('heroSearchInput').value=this.value;
+  filterCards();
+});
+
+renderDeals();
+renderTrending();
+filterCards();
+</script>
+</body>
+</html>
